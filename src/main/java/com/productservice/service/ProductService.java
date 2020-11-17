@@ -1,16 +1,20 @@
 package com.productservice.service;
 
+import com.productservice.dto.PageAndSizeDTO;
+import com.productservice.dto.ProductDTO;
 import com.productservice.model.Product;
 
 import java.util.List;
 
 public interface ProductService {
 
-    Product save(Product product);
+    ProductDTO save(ProductDTO product);
 
-    List<Product> findAll();
+    ProductDTO update(ProductDTO product);
 
-    Product findById(String id);
+    List<ProductDTO> findAll(PageAndSizeDTO pageAndSizeDTO);
+
+    ProductDTO findById(String id);
 
     void delete(String id);
 }

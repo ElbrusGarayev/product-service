@@ -1,7 +1,8 @@
 spring:
-  jpa:
-    show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+  application:
+    name: Product Service
+
 server:
   port: 8081
+  servlet:
+    context-path: /api/product-ms
