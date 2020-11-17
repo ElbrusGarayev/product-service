@@ -7,7 +7,6 @@ import com.productservice.model.Product;
 import com.productservice.repository.ProductRepository;
 import com.productservice.service.ProductService;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
@@ -28,13 +27,15 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
-    public ProductDTO save(ProductDTO product) {
-        return null;
+    public ProductDTO save(ProductDTO productDTO) {
+        Product product = productMapper.dtoToModel(productDTO);
+        return productMapper.modelToDto(productRepository.save(product));
     }
 
     @Override
-    public ProductDTO update(ProductDTO product) {
-        return null;
+    public ProductDTO update(String id, ProductDTO productDTO) {
+        Product product = productMapper.dtoToModel(productDTO);
+        return productMapper.modelToDto(productRepository.save(product));
     }
 
     @Override
@@ -42,16 +43,17 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = PageRequest.of(pageAndSizeDTO.getPage(), pageAndSizeDTO.getSize());
         Page<Product> page = productRepository.findAll(pageable);
         List<Product> products = page.getContent();
-        return products.stream().map(ProductMapper.INSTANCE::modelToDTO).collect(Collectors.toList());
+        return products.stream().map(productMapper::modelToDto).collect(Collectors.toList());
     }
 
     @Override
     public ProductDTO findById(String id) {
-        return null;
+        Product product = productRepository.findById(id).orElseThrow(null);
+        return productMapper.modelToDto(product);
     }
 
     @Override
     public void delete(String id) {
-
+        productRepository.deleteById(id);
     }
 }

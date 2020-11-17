@@ -2,7 +2,6 @@ package com.productservice.controller;
 
 import com.productservice.dto.PageAndSizeDTO;
 import com.productservice.dto.ProductDTO;
-import com.productservice.model.Product;
 import com.productservice.service.ProductService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,27 +19,27 @@ public class ProductController {
     final ProductService productService;
 
     @GetMapping("/all")
-    ResponseEntity<List<ProductDTO>> getProducts(PageAndSizeDTO pageAndSizeDTO){
+    public ResponseEntity<List<ProductDTO>> getProducts(PageAndSizeDTO pageAndSizeDTO){
         return ResponseEntity.ok(productService.findAll(pageAndSizeDTO));
     }
 
     @GetMapping("{id}")
-    ResponseEntity<ProductDTO> getProductById(@PathVariable String id){
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable String id){
         return ResponseEntity.ok(productService.findById(id));
     }
 
     @PostMapping
-    ResponseEntity<ProductDTO> save(@RequestBody ProductDTO product){
+    public ResponseEntity<ProductDTO> save(@RequestBody ProductDTO product){
         return ResponseEntity.ok(productService.save(product));
     }
 
     @PutMapping("{id}")
-    ResponseEntity<ProductDTO> update(@RequestBody ProductDTO product, @PathVariable String id){
-        return ResponseEntity.ok(productService.save(product));
+    public ResponseEntity<ProductDTO> update(@RequestBody ProductDTO productDTO, @PathVariable String id){
+        return ResponseEntity.ok(productService.update(id, productDTO));
     }
 
     @DeleteMapping("/product-deleting")
-    void deleteProduct(@RequestParam String id){
+    public void deleteProduct(@RequestParam String id){
         productService.delete(id);
     }
 }
