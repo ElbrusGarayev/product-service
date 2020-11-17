@@ -23,8 +23,18 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAll());
     }
 
+    @GetMapping("/product")
+    ResponseEntity<Product> getProduct(@RequestParam String id){
+        return ResponseEntity.ok(productService.findById(id));
+    }
+
     @PutMapping("/product-saving")
     ResponseEntity<Product> saveProduct(@RequestBody Product product){
         return ResponseEntity.ok(productService.save(product));
+    }
+
+    @DeleteMapping("/product-deleting")
+    void deleteProduct(@RequestParam String id){
+        productService.delete(id);
     }
 }
