@@ -38,8 +38,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.update(id, productDTO));
     }
 
-    @DeleteMapping("/product-deleting")
-    public void deleteProduct(@RequestParam String id){
+    @DeleteMapping("{id}")
+    public void deleteProduct(@PathVariable String id){
         productService.delete(id);
     }
 }
