@@ -2,6 +2,7 @@ package com.productservice.service;
 
 import com.productservice.dto.PageAndSizeDTO;
 import com.productservice.dto.ProductDTO;
+import com.productservice.dto.SearchProductDTO;
 
 import java.util.List;
 
@@ -16,4 +17,6 @@ public interface ProductService {
     ProductDTO findById(String id);
 
     void delete(String id);
+
+    List<ProductDTO> search(SearchProductDTO productDTO);
 }
