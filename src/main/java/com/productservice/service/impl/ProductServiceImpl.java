@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,29 +71,32 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDTO> search(SearchProductDTO productDTO) {
-        Criteria criteria = null;
+        List<Criteria> criteria = new ArrayList<>();
         String insensitive = "i";
         if (StringUtils.isNotBlank(productDTO.getName()))
-            criteria = Criteria.where(NAME.getLabel()).regex(productDTO.getName(), insensitive);
+            criteria.add(Criteria.where(NAME.getLabel()).regex(productDTO.getName(), insensitive));
         if (StringUtils.isNotBlank(productDTO.getDescription()))
-            criteria = criteria != null ? criteria.and(DESCRIPTION.getLabel()).regex(productDTO.getDescription(), insensitive) : Criteria.where(DESCRIPTION.getLabel()).regex(productDTO.getDescription(), insensitive);
+            criteria.add(Criteria.where(DESCRIPTION.getLabel()).regex(productDTO.getDescription(), insensitive));
         if (productDTO.getPrice() != 0)
-            criteria = criteria != null ? criteria.and(PRICE.getLabel()).is(productDTO.getPrice()) : Criteria.where(PRICE.getLabel()).is(productDTO.getPrice());
+            criteria.add(Criteria.where(PRICE.getLabel()).is(productDTO.getPrice()));
         if (StringUtils.isNotBlank(productDTO.getBrand()))
-            criteria = criteria != null ? criteria.and(BRAND.getLabel()).regex(productDTO.getBrand(), insensitive) : Criteria.where(BRAND.getLabel()).regex(productDTO.getBrand(), insensitive);
+            criteria.add(Criteria.where(BRAND.getLabel()).regex(productDTO.getBrand(), insensitive));
         if (productDTO.getProductSize() != null)
-            criteria = criteria != null ? criteria.and(SIZE.getLabel()).is(productDTO.getProductSize()) : Criteria.where(SIZE.getLabel()).is(productDTO.getProductSize());
+            criteria.add(Criteria.where(SIZE.getLabel()).is(productDTO.getProductSize()));
         if (productDTO.getStockCount() != 0)
-            criteria = criteria != null ? criteria.and(STOCK_COUNT.getLabel()).is(productDTO.getStockCount()) : Criteria.where(STOCK_COUNT.getLabel()).is(productDTO.getStockCount());
+            criteria.add(Criteria.where(STOCK_COUNT.getLabel()).is(productDTO.getStockCount()));
         if (StringUtils.isNotBlank(productDTO.getType()))
-            criteria = criteria != null ? criteria.and(TYPE.getLabel()).regex(productDTO.getType(), insensitive) : Criteria.where(TYPE.getLabel()).regex(productDTO.getType(), insensitive);
+            criteria.add(Criteria.where(TYPE.getLabel()).regex(productDTO.getType(), insensitive));
         if (StringUtils.isNotBlank(productDTO.getColor()))
-            criteria = criteria != null ? criteria.and(COLOR.getLabel()).regex(productDTO.getColor(), insensitive) : Criteria.where(COLOR.getLabel()).regex(productDTO.getColor(), insensitive);
+            criteria.add(Criteria.where(COLOR.getLabel()).regex(productDTO.getColor(), insensitive));
         if (productDTO.getGender() != null)
-            criteria = criteria != null ? criteria.and(GENDER.getLabel()).is(productDTO.getGender()) : Criteria.where(GENDER.getLabel()).is(productDTO.getGender());
+            criteria.add(Criteria.where(GENDER.getLabel()).is(productDTO.getGender()));
+
+        Criteria multiCriteria = new Criteria().andOperator(criteria.toArray(new Criteria[0]));
+
         Pageable pageable = PageRequest.of(productDTO.getPage(), productDTO.getSize());
         Query query = new Query().with(pageable);
-        query = criteria != null ? query.addCriteria(criteria).with(pageable) : query;
+        query.addCriteria(multiCriteria);
         List<Product> products = mongoTemplate.find(query, Product.class);
         return products.stream().map(productMapper::modelToDto).collect(Collectors.toList());
     }
