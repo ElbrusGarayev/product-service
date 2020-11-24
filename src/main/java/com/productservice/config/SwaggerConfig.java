@@ -28,8 +28,8 @@ public class SwaggerConfig {
     }
     private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder().title(TITLE)
-                .description("Notification Service")
-                .contact(new Contact("Aziz Isgnadarzada", "www.ibar.az", "aziz.isgandarzada@ibar.az"))
+                .description("Product Service")
+                .contact(new Contact("Elbrus Garayev", "www.ibar.az", "elbrus.qarayev@ibar.az"))
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
                 .version(VERSION)
