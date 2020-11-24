@@ -1,4 +1,4 @@
-package com.productservice.util;
+package com.productservice.enums;
 
 import lombok.Getter;
 

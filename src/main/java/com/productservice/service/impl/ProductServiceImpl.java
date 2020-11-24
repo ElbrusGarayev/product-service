@@ -3,6 +3,9 @@ package com.productservice.service.impl;
 import com.productservice.dto.PageAndSizeDTO;
 import com.productservice.dto.ProductDTO;
 import com.productservice.dto.SearchProductDTO;
+import com.productservice.enums.ExceptionEnum;
+import com.productservice.exception.ProductAlreadyExistsException;
+import com.productservice.exception.ProductNotFoundException;
 import com.productservice.mapper.ProductMapper;
 import com.productservice.model.Product;
 import com.productservice.repository.ProductRepository;
@@ -23,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.productservice.util.ProductUtil.*;
+import static com.productservice.enums.ProductUtil.*;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -37,13 +40,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO save(ProductDTO productDTO) {
+        productRepository.findByName(productDTO.getName()).ifPresent(t -> {
+            throw new ProductAlreadyExistsException(ExceptionEnum.PRODUCT_ALREADY_EXISTS);
+        });
         Product product = productMapper.dtoToModel(productDTO);
         return productMapper.modelToDto(productRepository.save(product));
     }
 
     @Override
     public ProductDTO update(String id, ProductDTO productDTO) {
-        Product product = productRepository.findById(id).orElseThrow(null);
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
         Product newProduct = productMapper.dtoToModel(productDTO);
         newProduct.setId(product.getId());
         newProduct.setCreatedDate(product.getCreatedDate());
@@ -60,13 +66,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO findById(String id) {
-        Product product = productRepository.findById(id).orElseThrow(null);
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
         return productMapper.modelToDto(product);
     }
 
     @Override
     public void delete(String id) {
-        productRepository.deleteById(id);
+        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
+        productRepository.delete(product);
     }
 
     @Override
