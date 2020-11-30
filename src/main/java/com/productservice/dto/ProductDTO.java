@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @ApiModel(value = "ProductDTO")
-public class ProductDTO {
+public class ProductDTO implements Serializable {
 
     @ApiModelProperty(name = "product id", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
     String id;

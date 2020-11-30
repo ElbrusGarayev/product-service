@@ -14,6 +14,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -39,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
 
 
     @Override
+    @CacheEvict(value = "all_products", allEntries = true)
     public ProductDTO save(ProductDTO productDTO) {
         productRepository.findByName(productDTO.getName()).ifPresent(t -> {
             throw new ProductAlreadyExistsException(ExceptionEnum.PRODUCT_ALREADY_EXISTS);
@@ -48,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @CachePut(value = "product_by_id", key = "#productDTO.id")
     public ProductDTO update(String id, ProductDTO productDTO) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
         Product newProduct = productMapper.dtoToModel(productDTO);
@@ -57,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "all_products")
     public List<ProductDTO> findAll(PageAndSizeDTO pageAndSizeDTO) {
         Pageable pageable = PageRequest.of(pageAndSizeDTO.getPage(), pageAndSizeDTO.getSize());
         Page<Product> page = productRepository.findAll(pageable);
@@ -65,6 +72,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "product_by_id", key = "#id")
     public ProductDTO findById(String id) {
         Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
         return productMapper.modelToDto(product);
