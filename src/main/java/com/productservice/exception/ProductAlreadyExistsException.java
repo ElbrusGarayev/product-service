@@ -9,10 +9,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductAlreadyExistsException extends ProductBaseException{
 
-    public ProductAlreadyExistsException(String code, String message) {
-        super(code, message);
-    }
-
     public ProductAlreadyExistsException(ExceptionEnum exceptionEnum) {
         super(exceptionEnum.getCode(), exceptionEnum.name().toLowerCase());
     }

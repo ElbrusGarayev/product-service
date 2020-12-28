@@ -1,8 +1,6 @@
 package com.productservice.service.impl;
 
-import com.productservice.dto.PageAndSizeDTO;
-import com.productservice.dto.ProductDTO;
-import com.productservice.dto.SearchProductDTO;
+import com.productservice.dto.*;
 import com.productservice.enums.ExceptionEnum;
 import com.productservice.exception.ProductAlreadyExistsException;
 import com.productservice.exception.ProductNotFoundException;
@@ -13,6 +11,7 @@ import com.productservice.service.ProductService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.productservice.enums.ProductUtil.*;
-
+@Log4j2
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
@@ -55,7 +54,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @CachePut(value = "product_by_id", key = "#productDTO.id")
     public ProductDTO update(String id, ProductDTO productDTO) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         Product newProduct = productMapper.dtoToModel(productDTO);
         newProduct.setId(product.getId());
         newProduct.setCreatedDate(product.getCreatedDate());
@@ -74,13 +73,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Cacheable(value = "product_by_id", key = "#id")
     public ProductDTO findById(String id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         return productMapper.modelToDto(product);
     }
 
     @Override
     public void delete(String id) {
-        Product product = productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(ExceptionEnum.PRODUCT_NOT_FOUND));
+        Product product = productRepository.findById(id).orElseThrow(ProductNotFoundException::new);
         productRepository.delete(product);
     }
 
@@ -114,6 +113,15 @@ public class ProductServiceImpl implements ProductService {
         query.addCriteria(multiCriteria);
         List<Product> products = mongoTemplate.find(query, Product.class);
         return products.stream().map(productMapper::modelToDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public OrderedProductDTO purchase(OrderDTO orderDTO) {
+        Product product = productRepository.findById(orderDTO.getProductId()).orElseThrow(ProductNotFoundException::new);
+        product.setStockCount(product.getStockCount() - orderDTO.getProductCount());
+        ProductDTO productDTO = productMapper.modelToDto(productRepository.save(product));
+        OrderedProductDTO orderedProductDTO = productMapper.toOrderedProductDTO(productDTO);
+        return orderedProductDTO;
     }
 
 }

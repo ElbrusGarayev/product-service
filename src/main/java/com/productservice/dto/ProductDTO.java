@@ -33,7 +33,7 @@ public class ProductDTO implements Serializable {
     @ApiModelProperty(name = "product price")
     @NotNull
     @Positive(message = "price_cannot_be_zero_or_negative")
-    int price;
+    double price;
     @ApiModelProperty(name = "product brand")
     @NotBlank(message = "brand_is_required")
     String brand;

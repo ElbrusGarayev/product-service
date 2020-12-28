@@ -23,7 +23,7 @@ public class Product implements Serializable {
     String id;
     String name;
     String description;
-    int price;
+    double price;
     String brand;
     SizeEnum size;
     @Field(name = "stock_count")

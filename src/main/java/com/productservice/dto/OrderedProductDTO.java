@@ -1,7 +1,5 @@
 package com.productservice.dto;
 
-import com.productservice.enums.GenderEnum;
-import com.productservice.enums.SizeEnum;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,15 +10,10 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SearchProductDTO extends PageAndSizeDTO{
+public class OrderedProductDTO {
 
+    String productId;
     String name;
-    String description;
     double price;
     String brand;
-    SizeEnum productSize;
-    int stockCount;
-    String type;
-    String color;
-    GenderEnum gender;
 }

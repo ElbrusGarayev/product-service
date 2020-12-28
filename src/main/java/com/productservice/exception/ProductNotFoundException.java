@@ -13,11 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProductNotFoundException extends ProductBaseException {
 
-    public ProductNotFoundException(String code, String message) {
-        super(code, message);
-    }
-
-    public ProductNotFoundException(ExceptionEnum exceptionEnum) {
-        super(exceptionEnum.getCode(), exceptionEnum.name().toLowerCase());
+    public ProductNotFoundException() {
+        super(ExceptionEnum.PRODUCT_NOT_FOUND.getCode(), ExceptionEnum.PRODUCT_NOT_FOUND.name().toLowerCase());
     }
 }
