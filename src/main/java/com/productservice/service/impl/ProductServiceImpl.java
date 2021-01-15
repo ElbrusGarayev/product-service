@@ -2,6 +2,7 @@ package com.productservice.service.impl;
 
 import com.productservice.dto.*;
 import com.productservice.enums.ExceptionEnum;
+import com.productservice.exception.NotEnoughProductException;
 import com.productservice.exception.ProductAlreadyExistsException;
 import com.productservice.exception.ProductNotFoundException;
 import com.productservice.mapper.ProductMapper;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.productservice.enums.ProductUtil.*;
+
 @Log4j2
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -118,10 +119,13 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public OrderedProductDTO purchase(OrderDTO orderDTO) {
         Product product = productRepository.findById(orderDTO.getProductId()).orElseThrow(ProductNotFoundException::new);
-        product.setStockCount(product.getStockCount() - orderDTO.getProductCount());
+        if (product.getStockCount() >= orderDTO.getProductCount()){
+            product.setStockCount(product.getStockCount() - orderDTO.getProductCount());
+        }else{
+            throw new NotEnoughProductException();
+        }
         ProductDTO productDTO = productMapper.modelToDto(productRepository.save(product));
-        OrderedProductDTO orderedProductDTO = productMapper.toOrderedProductDTO(productDTO);
-        return orderedProductDTO;
+        return productMapper.toOrderedProductDTO(productDTO);
     }
 
 }

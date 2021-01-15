@@ -39,6 +39,17 @@ public class ProductExceptionHandler {
                 .build();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(NotEnoughProductException.class)
+    public ErrorDTO handleException(NotEnoughProductException ex){
+        log.error ("{} error occurred while processing request.", ex.getMessage());
+        return ErrorDTO.builder()
+                .code(ex.getCode())
+                .message(ex.getMessage())
+                .dateTime(ex.getDateTime())
+                .build();
+    }
+
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public Object handleException(MethodArgumentNotValidException ex) {
         log.error ("{} error occurred while processing request.", ex.getMessage());
